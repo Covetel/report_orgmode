@@ -250,13 +250,14 @@ class OrgmodeParser(report_sxw):
             path = addons.get_module_resource(*report_path.split('/'))
             if path and os.path.exists(path) :
                 resource_path = os.path.dirname(path)
-                template = file(path).read().encode('utf-8')
+                template = file(path).read()
+                template_utf8 = unicode(template, 'utf-8')
         if not template :
             raise osv.except_osv(_('Error!'), _('Org-mode report template not found!'))
 
         for obj in objs:
             try :
-                org = pystache.render(parsed, obj)
+                org = pystache.render(template_utf8, obj).encode('utf-8')
             except Exception:
                 msg = "Error en archivo ORG" 
                 _logger.error(msg)
