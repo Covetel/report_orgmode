@@ -1,0 +1,40 @@
+#+TITLE: {{name}}
+#+AUTHOR: {{user_id.name}}
+#+EMAIL: {{user_id.email}}
+#+DATE: {{date_order}}
+#+DESCRIPTION: {{name}}
+#+KEYWORDS: 
+#+LaTeX_CLASS: book
+#+LaTeX_CLASS_OPTIONS: [11pt,letterpaper,oneside,spanish]
+#+LANGUAGE:  es
+#+OPTIONS:   H:3 num:t toc:3 \\n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME:
+#+LATEX_HEADER: \usepackage{array}
+
+* Inversión
+*Dirigido a:*
+
+{{partner_id.name}} 
+
+
+*RIF* {{partner_id.vat}}
+
+*{{state}} {{name}}*
+
+#+CAPTION: Detalle
+#+ATTR_LaTeX: longtable align=|m{2cm}|m{10cm}|m{2cm}|m{2cm}|
+|-----------------------+----------+----------------+--------------------+
+|      *Cantidad*       | *Nombre* |  *Precio Unit* |     *Subtotal*     |
+|-----------------------+----------+----------------+--------------------+
+{{#order_line}}
+| {{product_uom_qty}}   | {{name}} | {{price_unit}} | {{price_subtotal}} |
+|-----------------------+----------+----------------+--------------------+
+{{/order_line}}
+|                       |          |     *Total*    | *{{amount_total}}* |       
+|-----------------------+----------+----------------+--------------------+
+
+\medskip
