@@ -1,4 +1,4 @@
 # -*- coding: utf-8 -*-
 
-import report_helper
+import ir_report
 import orgmode_report
