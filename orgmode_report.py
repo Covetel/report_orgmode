@@ -128,13 +128,7 @@ class OrgmodeParser(report_sxw):
         stderr_fd, stderr_path = tempfile.mkstemp(dir=tmp_dir,text=True)
         try:
             _logger.info("Source Org-mode File: %s" % os.path.join(tmp_dir, org_filename))
-            try:
-                output = subprocess.check_output(command, stderr=stderr_fd, env=env)
-            except subprocess.CalledProcessError, r:
-                for m in messages:
-                    _logger.error("{message}:{lineno}:{line}".format(**m))
-                raise osv.except_osv(_('Org-mode error'),
-                      _("The command 'emacs' failed with error. Read logs."))
+            output = subprocess.check_output(command, stderr=stderr_fd, env=env)
 
             os.close(stderr_fd) # ensure flush before reading
             stderr_fd = None # avoid closing again in finally block
@@ -143,7 +137,7 @@ class OrgmodeParser(report_sxw):
             pdf = pdf_file.read()
             pdf_file.close()
         except:
-            raise osv.except_osv(_('Org-mode error'),
+            raise osv.except_osv(_('Org-mode document error'),
                   _("The command 'emacs' failed with error. Read logs."))
         finally:
             if stderr_fd is not None:
