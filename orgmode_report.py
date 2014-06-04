@@ -127,21 +127,14 @@ class OrgmodeParser(report_sxw):
 
         stderr_fd, stderr_path = tempfile.mkstemp(dir=tmp_dir,text=True)
         try:
-            rerun = True
-            countrerun = 1
             _logger.info("Source Org-mode File: %s" % os.path.join(tmp_dir, org_filename))
-            while rerun:
-                try:
-                    _logger.info("Run count: %i" % countrerun)
-                    output = subprocess.check_output(command, stderr=stderr_fd, env=env)
-                except subprocess.CalledProcessError, r:
-                    messages, rerun = self.parse_log(tmp_dir, log_filename)
-                    for m in messages:
-                        _logger.error("{message}:{lineno}:{line}".format(**m))
-                    raise osv.except_osv(_('Org-mode error'),
-                          _("The command 'emacs' failed with error. Read logs."))
-                messages, rerun = self.parse_log(tmp_dir, log_filename)
-                countrerun = countrerun + 1
+            try:
+                output = subprocess.check_output(command, stderr=stderr_fd, env=env)
+            except subprocess.CalledProcessError, r:
+                for m in messages:
+                    _logger.error("{message}:{lineno}:{line}".format(**m))
+                raise osv.except_osv(_('Org-mode error'),
+                      _("The command 'emacs' failed with error. Read logs."))
 
             os.close(stderr_fd) # ensure flush before reading
             stderr_fd = None # avoid closing again in finally block
@@ -175,53 +168,6 @@ class OrgmodeParser(report_sxw):
         if not res :
             return src
         return res
-
-    def parse_log(self, tmp_dir, log_filename):
-        log_file = open(os.path.join(tmp_dir, log_filename))
-
-        messages = []
-        warnings = []
-        rerun = False
-        state = LOGNOMESSAGE
-
-        for line in log_file:
-            if state==LOGNOMESSAGE:
-                if line[0] == "!": # Start message
-                    state = LOGWAITLINE
-                    messages.append({
-                        'message': line[2:-1].strip(),
-                    })
-                elif RERUNTEXT in line:
-                    rerun = True
-                elif "Org-mode Warning" in line:
-                    warnings.append(line.strip().split(':')[1])
-            elif state==LOGWAITLINE:
-                if line[0] == 'l': # Get line number
-                    state=LOGINLINE
-                    lineno, cleanline = line[2:].split(' ', 1)
-                    messages[-1].update({
-                        'lineno': int(lineno),
-                        'line': "%s" % cleanline.strip(),
-                    })
-            elif state==LOGINLINE:
-                if True: # Else get last line
-                    state=LOGINHELP
-                    cleanline = line.strip()
-                    messages[-1].update({
-                        'line': "%s<!>%s" % (messages[-1].get('line', ''), cleanline),
-                    })
-            elif state==LOGINHELP:
-                if line=="\n": # No help, then end message
-                    state = LOGNOMESSAGE
-                else: 
-                    cleanline = line.strip()
-                    messages[-1].update({
-                        'help': "%s %s" % (messages[-1].get('help', ''), cleanline),
-                    })
-
-        rerun = rerun or ([ w for w in warnings if "Rerun" in w ] != [])
-
-        return messages, rerun
 
     # override needed to keep the attachments storing procedure
     def create_single_pdf(self, cursor, uid, ids, data, report_xml, context=None):
