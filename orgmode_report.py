@@ -104,9 +104,6 @@ class OrgmodeParser(report_sxw):
             command = [comm_path]
         else:
             command = ['emacs']
-        command.extend(['-output-directory', tmp_dir])
-        command.extend(['-f', 'org-export-as-pdf'])
-        command.extend(['--batch',])
 
         count = 0
 
@@ -118,7 +115,9 @@ class OrgmodeParser(report_sxw):
         count += 1
         org_file.write(org)
         org_file.close()
-        command.append(org_filename)
+        command.append(tmp_dir+"/"+org_filename)
+        command.extend(['-f', 'org-export-as-pdf'])
+        command.extend(['--batch',])
 
         env = os.environ
         if resource_path:
