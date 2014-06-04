@@ -13,7 +13,7 @@
 #+EXPORT_EXCLUDE_TAGS: noexport
 #+LINK_UP:   
 #+LINK_HOME:
-#+LATEX_HEADER: \usepackage{array}
+#+LATEX_HEADER: \usepackage{array}\usepackage{fullpage}
 
 * Inversión
 *Dirigido a:*
