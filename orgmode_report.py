@@ -194,20 +194,19 @@ class OrgmodeParser(report_sxw):
         if not template :
             raise osv.except_osv(_('Error!'), _('Org-mode report template not found!'))
 
-        for obj in objs:
-            try :
-                org = pystache.render(template_utf8, obj).encode('utf-8')
-            except Exception:
-                msg = "Error en archivo ORG" 
-                _logger.error(msg)
-                raise osv.except_osv(_('Orgmode render!'), msg)
+        try :
+            org = pystache.render(template_utf8, self.parser_instance.localcontext).encode('utf-8')
+        except Exception:
+            msg = "Error en archivo ORG"
+            _logger.error(msg)
+            raise osv.except_osv(_('Orgmode render!'), msg)
 
-            finally:
-                _logger.info("Removing temporal directory from helper.")
-            bin = self.get_lib(cursor, uid)
-            pprint.pprint(bin)
-            pdf = self.generate_pdf(bin, report_xml, org, resource_path=resource_path)
-            return (pdf, 'pdf')
+        finally:
+            _logger.info("Removing temporal directory from helper.")
+        bin = self.get_lib(cursor, uid)
+        pprint.pprint(bin)
+        pdf = self.generate_pdf(bin, report_xml, org, resource_path=resource_path)
+        return (pdf, 'pdf')
 
 
     def create(self, cursor, uid, ids, data, context=None):
