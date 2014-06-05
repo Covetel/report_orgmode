@@ -38,7 +38,7 @@ import time
 import logging
 import shutil
 
-import pystache, pprint
+import pystache, pprint, imghdr, base64
 
 from openerp import netsvc
 from openerp import pooler
@@ -118,6 +118,15 @@ class OrgmodeParser(report_sxw):
         command.append(tmp_dir+"/"+org_filename)
         command.extend(['-f', 'org-export-as-pdf'])
         command.extend(['--batch',])
+
+        #Extract company_logo image
+        company_logo = self.parser_instance.localcontext['logo']
+        binimg = base64.b64decode(company_logo)
+        suffix = imghdr.what('', binimg)
+        img_filename = "company_logo"+"."+suffix
+        img_file = file(os.path.join(tmp_dir, img_filename), 'w')
+        img_file.write(binimg)
+        img_file.close()
 
         env = os.environ
         if resource_path:
@@ -204,7 +213,6 @@ class OrgmodeParser(report_sxw):
         finally:
             _logger.info("Removing temporal directory from helper.")
         bin = self.get_lib(cursor, uid)
-        pprint.pprint(bin)
         pdf = self.generate_pdf(bin, report_xml, org, resource_path=resource_path)
         return (pdf, 'pdf')
 
