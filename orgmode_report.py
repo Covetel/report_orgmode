@@ -107,6 +107,9 @@ class OrgmodeParser(report_sxw):
 
         count = 0
 
+        #Execute block with latex clas into org file
+        echo = subprocess.Popen(('/bin/echo', 'yes'), stdout=subprocess.PIPE)
+
         prefix_filename = str(time.time()) + str(count)
         org_filename = prefix_filename +'.org'
         pdf_filename = prefix_filename +'.pdf'
@@ -116,8 +119,7 @@ class OrgmodeParser(report_sxw):
         org_file.write(org)
         org_file.close()
         command.append(tmp_dir+"/"+org_filename)
-        command.extend(['-f', 'org-export-as-pdf'])
-        command.extend(['--batch',])
+        command.extend(['--batch', '-f', 'org-babel-execute-src-block-maybe', '-f', 'org-export-as-pdf'])
 
         #Extract company_logo image
         company_logo = self.parser_instance.localcontext['logo']
@@ -137,7 +139,7 @@ class OrgmodeParser(report_sxw):
         stderr_fd, stderr_path = tempfile.mkstemp(dir=tmp_dir,text=True)
         try:
             _logger.info("Source Org-mode File: %s" % os.path.join(tmp_dir, org_filename))
-            output = subprocess.check_output(command, stderr=stderr_fd, env=env)
+            output = subprocess.check_output(command, stdin=echo.stdout, stderr=stderr_fd, env=env)
 
             os.close(stderr_fd) # ensure flush before reading
             stderr_fd = None # avoid closing again in finally block
