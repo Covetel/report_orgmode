@@ -5,6 +5,7 @@ OpenERP module that allow generate org-mode reports using pystache as template s
 
 Requirements
 -------------
-- Emacs > 23.4.1
+- emacs-snapshot-nox > 2:20140101 (from deb http://emacs.naquadah.org/ stable/)
+- org-mode > 7.8.11
 - texlive-latex-extra > 2012.20120611-2
-- pytstache > 0.5.4
+- pytstache > 0.5.4 (install with easy_install)
