@@ -148,6 +148,9 @@ class OrgmodeParser(report_sxw):
             pdf = pdf_file.read()
             pdf_file.close()
         except:
+            latex_log = open(os.path.join(tmp_dir, log_filename), 'rb')
+            log = latex_log.read()
+            _logger.error(log)
             raise osv.except_osv(_('Org-mode document error'),
                   _("The command 'emacs' failed with error. Read logs."))
         finally:
